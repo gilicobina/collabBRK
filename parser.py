@@ -13,7 +13,7 @@ def ler_produtos(arquivo):
 
 
 x = ('/home/mateus/Documentos/algoritmos de otimizacao/MOSP/ChallengeInstances2005/'+argv[1]+'/')
-y = ('/home/mateus/Documentos/algoritmos de otimizacao/MOSP/ChallengeInstances2005/trial/')
+y = ('trial/')
 listaArq = glob.glob(x+'*.txt')
 
 for file in listaArq:

@@ -42,8 +42,6 @@ else:
 
 listaArq = glob.glob(x+'*.txt')
 
-
-
 for arq in listaArq:
 	salve = arq.replace(x,'')
 	salve = salve.replace('.txt','')
@@ -77,8 +75,8 @@ for arq in listaArq:
 			#os.system('git add .')
 			#os.system("git commit -a -m '%s'"%now)
 			#os.system('git push origin master')
-	else:
-		os.system("files.download("+sol+salve+"_solu.csv)")
+	
+		
 		print('Solucao '+ str(atribuicao.solucao))
 
 

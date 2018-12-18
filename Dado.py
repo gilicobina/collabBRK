@@ -17,19 +17,20 @@ class Dados:
 
 	def ler_dados(self, arquivo):
 		try:
-			arq = open(arquivo,'r')
 			mat = []
-			for linha in arq:
-				vec =[]
-				aux =[]
-				aux = linha.split()
-                  #print linha
-				for caract in aux:
-					if caract == '0' or caract == '1':
-						vec.append(int(caract))
-				mat.append(vec)
-#                arq.close()
-			#mat = self.transposeMatrix(mat)
+			with open(arquivo) as arq:
+				for linha in arq:
+					vec =[]
+					aux =[]
+					aux = linha.split()
+	                  #print linha
+					for caract in aux:
+						if caract == '0' or caract == '1':
+							vec.append(int(caract))
+					mat.append(vec)
+	                #arq.close()
+				#mat = self.transposeMatrix(mat)
+			print mat
 			return (len(mat[1])),mat
 
 		except IOError:
