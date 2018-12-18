@@ -5,15 +5,6 @@ class Dados:
 		self.dim = tupla[0]
 		self.matriz = tupla[1]
 		
-	def transposeMatrix(self,M):
-		"""Calcula a transposta de uma matriz."""
-		aux=[]
-		for j in range(len(M[0])):
-			linha=[]
-		for i in range(len(M)):
-			linha.append(M[i][j])
-			aux.append(linha)
-		return aux
 
 	def ler_dados(self, arquivo):
 		try:
