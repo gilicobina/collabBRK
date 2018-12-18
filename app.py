@@ -77,7 +77,7 @@ for arq in listaArq:
 			#os.system('git add .')
 			#os.system("git commit -a -m '%s'"%now)
 			#os.system('git push origin master')
-	elif nlinhas>=10:
+	else:
 		os.system("files.download("+sol+salve+"_solu.csv)")
 		print('Solucao '+ str(atribuicao.solucao))
 
