@@ -27,8 +27,8 @@ TX_MUT = 0.17
 
 #dados = Dados('../dados_atribuicao/'+argv[1], argv[2])
 #dados = Dados('../dados_atribuicao/assign4.txt')
-x = 'trial/'
-sol = 'solucao/'
+x = '/trial/'
+sol = '/solucao/'
 #dados = Dados('trial/'+argv[1])
 # Create directory
 
