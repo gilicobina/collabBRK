@@ -41,7 +41,7 @@ else:
     print("Directory " , sol ,  " already exists")
 
 listaArq = glob.glob(x+'*.txt')
-
+print listaArq
 for arq in listaArq:
 	salve = arq.replace(x,'')
 	salve = salve.replace('.txt','')
