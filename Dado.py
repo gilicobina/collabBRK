@@ -21,7 +21,7 @@ class Dados:
 					mat.append(vec)
 	                #arq.close()
 				#mat = self.transposeMatrix(mat)
-			print mat
+			
 			return (len(mat[1])),mat
 
 		except IOError:

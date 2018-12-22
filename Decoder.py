@@ -8,7 +8,7 @@ class Decoder:
 		self.custos = custos
 		self.tam = int(tamanho)
   
-  	#Preenche matriz com indices 1
+  	#RECEBE UMA MATRIZ E TRATA PREENCHENDO AS LINHAS INTERCALADAS COM 1	
 
 	def preproc(self,mat2):
 		mat3 = np.copy(mat2)
@@ -29,7 +29,7 @@ class Decoder:
     
     
     
-	
+	#RECEBE UMA MATRIZ E RETORNA O MAIOR CUSTO OU SEJA, A QUANTIDADE MAXIMA DE PILHAS ABERTAS
 	def evalu(self,mat):
 	    	maxV = 0
 	    	lin = mat.shape[0]
@@ -52,7 +52,7 @@ class Decoder:
 
 	    	return maxV
     
-    
+    #RECEBE UMA MATRIZ E UM VETOR DE PADROES E REORDENA A POSICAO DAS COLUNAS
     
 	def change(self,mat,padroes):
 		matAux = np.copy(mat)
@@ -78,6 +78,8 @@ class Decoder:
 		return matAux
 
 
+
+		#RECEBE UM CROMOSSOMO CODIFICADO  E RETORNA SEU VALOR NO ESPACO DO PROBLEMA
 	def dcd(self, cromossomos):
 
 		'''
@@ -103,6 +105,9 @@ class Decoder:
 		#Funcao objetivo
 		pop = pop.astype(int)
 		return pop
+
+
+		#RECEBE UM CROMOSSOMO E RETORNA SUA AVALIACAO
 	def decode(self, cromossomos):
 
 		'''

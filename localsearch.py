@@ -235,5 +235,7 @@ class localsearch(threading.Thread):
         self.melhor = best_distance
     
 
-    #print("MELHOR 2-OPT ",str(best_distance))
+    print("MELHOR 2-OPT ",str(best_distance))
     return best_route
+
+  

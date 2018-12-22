@@ -1,6 +1,7 @@
 import csv
 import glob
 from sys import argv
+import os
 
 def verificar_arquivo():
   caminho = 'arquivo/produtos'
@@ -12,35 +13,45 @@ def ler_produtos(arquivo):
  
 
 
-x = ('/home/mateus/Documentos/algoritmos de otimizacao/MOSP/ChallengeInstances2005/'+argv[1]+'/')
-y = ('trial/')
+#x = ('/home/mateus/Documentos/algoritmos de otimizacao/MOSP/ChallengeInstances2005/'+argv[1]+'/')
+x = (argv[1]+'/')
+y = ('instancias/')
+if not os.path.exists(y):
+    os.mkdir(y)
+    print("Directory " , y ,  " Created ")
+else:    
+    print("Directory " , y ,  " already exists")
+
 listaArq = glob.glob(x+'*.txt')
 
+print listaArq
 for file in listaArq:
-	f = open(file,'r')
-	data = f.readlines()
+	arq = file.replace(x,'')
+	arq = arq.replace('.txt','')
+
+	with open(file) as f:
+		data = f.readlines()
+	
 	linha = []
 	count = 0
-	
 	for line in data:
 		words = line.split()
-
-		if len(words)>5 and (words[0] == '0' or words[0] == '1'):
+		if len(words)>4 and (words[0] == '0' or words[0] == '1'):
 			ww = str(words)
 			ww = ww.replace('[','')
 			ww = ww.replace(']','')
-			ww = ww.replace(',',' ')
+			ww = ww.replace(',','')
 			ww = ww.replace("'",'')
-			linha.append(ww)
+			if count>0:
+				with open(y+arq+'_'+str(count)+'.txt','a+') as z:
+					z.write(str(ww))
+					z.write('\n')
+			else:
+				with open(y+arq+'.txt','a+') as z:
+					z.write(str(ww))
+					z.write('\n')
 		elif words == []:
-			arq = file.replace(x,'')
-			arq = arq.replace('.txt','')
-			
-			z = open(y+argv[1]+'_'+arq+'_'+str(count)+'.txt','w+')
-			for lin in linha:
-				z.write(str(lin))
-				z.write('\n')
 			count = count + 1
-			linha = []
-			z.close()
+	
+
 		

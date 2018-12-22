@@ -15,7 +15,7 @@ import threading
 
 
 class BRKGA(threading.Thread):
-	def __init__(self, dados,tam_pop, max_gen, tx_cross,tx_mut, tx_elite):
+	def __init__(self, dados,tam_pop, max_gen, tx_cross,tx_mut, tx_elite,blx_alpha):
 		#Tamanho da populacao
 		self.TAM_POP = int(tam_pop)
 		#Criterio de parada
@@ -30,6 +30,8 @@ class BRKGA(threading.Thread):
 		self.TX_MUT = tx_mut
 		#Taxa da populacao que estara na populacao elite
 		self.TX_ELITE = tx_elite
+		self.BLX_ALPHA = blx_alpha
+
 
 		threading.Thread.__init__(self)
 		
@@ -98,7 +100,9 @@ class BRKGA(threading.Thread):
 		for i in range(len(vet)):
 			if r <= vet[i]:
 				return i
-
+##############################################################################				
+#							DECODER e ENCODER								 #
+##############################################################################
 
 	def decode(self,cromossomos):
 	    count = 0
@@ -128,14 +132,19 @@ class BRKGA(threading.Thread):
 	    return novo
 
 
+##############################################################################				
+#							CRUZAMENTOS										 #
+##############################################################################
+
+# BLX
 	def cruzamento(self,ind1,ind2):
 		#For the value of a, Eshelman and Schaffer have used 0.5[6]. With our calculation, the value of a that pre-serves 
 		#he variance of the parental population is 0.366
 		#A Crossover Operator Using  Independent  Component  Analysis for Real-Coded Genetic Algorithms Takahashi
-		
+		#testar 0.25
 		filho1=[]
 		filho2=[]
-		alpha = 0.366
+		alpha = self.BLX_ALPHA
 		for i in range(self.TAM_CROM):
 			dif = abs(ind1[i]-ind2[i])
 			minimum = min(ind1[i],ind2[i])
@@ -145,7 +154,7 @@ class BRKGA(threading.Thread):
 		return filho1,filho2
 
 
-
+# Tentativa DECODER + PMX + ENCODER
 	'''
 	def cruzamento(self,ind1, ind2):
 	    ind1_x = self.decode(ind1)
@@ -183,10 +192,10 @@ class BRKGA(threading.Thread):
 	    ind1 = self.encode(ind1_x[1])
 	    ind2 = self.encode(ind2_x[1])
 	    return ind1, ind2
+    '''	
     	
-    	
-    #parametrized uniform crossover    
-
+	#parametrized uniform crossover  - ORIGINAL DO BRKGA
+	'''
 	def cruzamento(self, pai,mae):
 		filhos = []
 		for i in range(2):
@@ -202,6 +211,7 @@ class BRKGA(threading.Thread):
 		
 		return filhos[0], filhos[1]
 	'''
+
 	def separacao_da_populacao(self, aptidoes, populacao):
 		#Elementos vai se tornar uma tupla composta por(aptidoes, populacao)
 		elementos = []
@@ -231,7 +241,13 @@ class BRKGA(threading.Thread):
 		#Retorna os melhores e os piores
 		return pop_elite, apt_elite, pop_nao_elite, apt_nao_elite 
 	
+##############################################################################				
+#							MUTACAO 										 #
+##############################################################################
+	
+	#MUTACAO DO CODIGO ORIGINAL
 	#Para continuar compondo a nova geracao, uma quantidade de mutantes eh criada.
+
 	'''
 	def mutacao(self):
 		qtd = int(self.TX_MUT*self.TAM_POP)
@@ -244,6 +260,8 @@ class BRKGA(threading.Thread):
 			mutantes.append(self.cromossomo)
 		return mutantes
 	'''
+
+	#MUTACAO PROPOSTA
 	def mutacao(self, pop):
 		cromossomos = np.copy(pop)
 		qtd = int(self.TX_MUT*self.TAM_CROM)
@@ -296,10 +314,7 @@ class BRKGA(threading.Thread):
 
 			#Agora faz o cruzamento e gerar os individuos restantes para compor a nova populacao
 			for c in range(int((self.TAM_POP-len(nova_populacao))/2)):
-				'''
-				print(len(populacao))
-				print(len(aptidoes))
-				'''
+				
 				#Selecao depois do elitismo do BRKGA em separar a populacao
 				pai = populacao_nao_elite[self.selecao_roleta(aptidao_nao_elite)]
 				mae = populacao_elite[self.selecao_roleta(aptidao_elite)]
@@ -318,11 +333,14 @@ class BRKGA(threading.Thread):
 			aptidao_nova = self.calcula_aptidao(nova_populacao)
 			#populacao = nova_populacao
 
-			#print(aptidoes)
-			#Calcula as aptidoes da nova geracao
-			kk = 0
 			
+			
+			#ADAPTACAO PARA CONSERVAR MAIS INDIVIDUOS DA POP ORIGINAL
+			#OS ELITES SAO SEMPRE CONSERVADOS
+			#MAS OS FILHOS OS QUAIS COMPOE A NOVA POPULACAO NAO NECESSARIAMENTE SAO MELHORES QUE OS INDIVIDUOS
+			#DA POP ORIGINAL, DESTA FORMA EVITA-SE QUE FILHOS RUINS PARTICIPEM DA NOVA GERACAO
 
+			kk = 0
 			if min(aptidao_nova)<min(aptidoes):
 				aptidoes[aptidoes.index(min(aptidoes))] == min(aptidao_nova)
 				populacao[aptidoes.index(min(aptidoes))] = nova_populacao[aptidao_nova.index(min(aptidao_nova))]
@@ -347,7 +365,7 @@ class BRKGA(threading.Thread):
 			#print(geracao+1,'- melhor:',melhores[0],' - tempo: ', fim)
 			#print(geracao+1,'- melhor:',melhores[0],self.decoder(populacao_elite[0]))
 			
-			#print(geracao+1,'- BRKGA melhor:',melhores[0])
+			print(geracao+1,'- BRKGA melhor:',melhores[0])
 
 
 			
@@ -355,14 +373,17 @@ class BRKGA(threading.Thread):
 			melhores.insert(0, np.min(aptidoes))
 			ls=localsearch(self.decoder(populacao_elite[0]),self.custos)
 			
-
-			if(geracao%5==0 and geracao%7==0):
+			#CHAMADA DA THREAD DO LOCALSEARCH
+			if(geracao%35==0):
 				ls.start()
 				ls.join() 
-			
-			if ls.melhor<=melhores[0]:
+			#VERIFICA SE O MELHOR ENCONTRADO EH MELHOR QUE O ATUAL
+			#SE SIM, ENCODA A SOLUCAO E INSERE NA POPULACAO
+			if ls.melhor<melhores[0]:
 					
-					populacao[0]=self.encode(ls.solu)
+				populacao[0]=self.encode(ls.solu)
+			elif ls.melhor==melhores[0]:
+				populacao[1]=self.encode(ls.solu)
 
 
 		#print("############## "+str(ls.iterated_local_search(self.decoder(populacao_elite[0]))))
